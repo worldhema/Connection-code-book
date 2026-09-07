@@ -101,3 +101,41 @@
 - **不必记技术细节**：书中所有真实技术名词（IP、TCP、SQL、RAG、向量……）都"点到为止、不要求记"。你只需抓住每个概念"解决了什么连接问题"。
 - **留意"回指前文"**：每当遇到新概念，本书都会告诉你"它在前面对应哪个原型"。这些回指，是理解全书主线的关键，别跳过。
 - **附录可随时查阅**：书末附有演进图、术语表、动手指南和"思想放大对照表"，可作为通读时的辅助和读后的复习。
+
+---
+
+## 仓库布局与成品
+
+```
+├── readme.md         ← 本说明
+├── LICENSE           ← 授权声明（个人免费 · 商业须授权）
+├── src/              ← 全书正文源文件（01-目录 … 25-附录，Markdown）
+├── doc/              ← 写作计划与进度报告
+├── scripts/          ← 组装脚本 build_combined.py（正文 → 渲染中间稿）
+├── build/            ← 渲染中间稿（由脚本生成，不入库）
+└── release/          ← 成品输出
+    ├── the-connection.html   整本网页书（带左侧目录，单文件可离线打开）
+    └── the-connection.pdf    整本 PDF（minimal 排版：封面 + 版权页 + 目录，267 页）
+```
+
+## 授权
+
+本仓库内容遵循根目录 `LICENSE`：**个人非商业使用免费**（阅读、下载、复制、分发，须保留署名）；
+**商业使用须事先取得作者 [WorldHema](https://github.com/worldhema) 书面授权**。两件成品（HTML / PDF）内均已内嵌此版权说明与作者主页。
+
+## 从源码重新构建
+
+依赖本机的两个转换技能：`md-to-html`（网页版）、`md2book`（PDF，需 playwright chromium）。
+
+```bash
+# 1) 生成中间稿
+python3 scripts/build_combined.py --mode html     # → build/for_html.md
+python3 scripts/build_combined.py --mode pdf      # → build/for_pdf.md
+
+# 2) 渲染成品到 release/
+python3 ~/.claude/skills/md-to-html/scripts/md_to_html.py \
+    build/for_html.md -o release/the-connection.html -t "《联结》 · The Connection"
+python3 scripts/build_combined.py --linkify-html release/the-connection.html
+node ~/.claude/skills/md2book/scripts/md2book.js \
+    build/for_pdf.md --theme minimal --output release/the-connection.pdf
+```
